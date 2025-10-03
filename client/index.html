@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Question & Answer App</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
     <div class="container">
         <div class="header">
@@ -16,11 +18,7 @@
         <div class="app-container">
             <div class="input-section">
                 <label for="questionInput">Enter your question:</label>
-                <textarea
-                    id="questionInput"
-                    placeholder="Type your question here..."
-                    rows="4"
-                ></textarea>
+                <textarea id="questionInput" placeholder="Type your question here..." rows="4"></textarea>
 
                 <div class="button-group">
                     <button id="sendBtn" class="btn btn-primary">Send Question</button>
@@ -30,12 +28,7 @@
 
             <div class="output-section">
                 <label for="answerOutput">Server Response:</label>
-                <textarea
-                    id="answerOutput"
-                    placeholder="Answer will appear here..."
-                    rows="4"
-                    readonly
-                ></textarea>
+                <textarea id="answerOutput" placeholder="Answer will appear here..." rows="4" readonly></textarea>
             </div>
 
             <div class="status" id="status"></div>
@@ -48,4 +41,5 @@
 
     <script src="js/script.js"></script>
 </body>
+
 </html>
