@@ -3,7 +3,7 @@ from datetime import datetime
 
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from response_handler import get_random_answer
+from data_manager import DataManager
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -12,6 +12,9 @@ CORS(app)  # Enable Cross-Origin Resource Sharing for client-server communicatio
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Initialize Data Manager (handles both SQLite and JSON)
+data_manager = DataManager()
 
 
 # Routes
@@ -44,7 +47,7 @@ def health_check():
 
 @app.route("/ask", methods=["POST"])
 def handle_question():
-    """Handle question from client and return answer"""
+    """Handle question from client and return answer with full data logging"""
     try:
         # Get JSON data from request
         data = request.get_json()
@@ -69,31 +72,85 @@ def handle_question():
         if not question:
             return jsonify({"error": "Question cannot be empty"}), 400
 
-        # Log the received username and question
-        logger.info(f"Received question from user '{username}': {question}")
+        # Get client IP address for logging
+        ip_address = request.remote_addr or "unknown"
 
-        # Process the question and generate response
-        # Get a random response from the JSON file
-        answer = get_random_answer()
-
-        # Log the response
-        logger.info(f"Sending answer to user '{username}': {answer}")
-
-        # Return the answer with username included
-        return (
-            jsonify(
-                {
-                    "answer": answer,
-                    "question": question,
-                    "username": username,
-                    "timestamp": datetime.now().isoformat(),
-                }
-            ),
-            200,
+        # Process question using data manager (handles SQLite + JSON logging)
+        response = data_manager.process_question(
+            username=username,
+            question=question,
+            ip_address=ip_address
         )
+
+        # Log successful processing
+        logger.info(f"Successfully processed question from user '{username}' (Event ID: {response.get('event_id')})")
+
+        # Return the response (contains answer, metadata, etc.)
+        return jsonify(response), 200
 
     except Exception as e:
         logger.error(f"Error processing question: {str(e)}")
+        return jsonify({"error": "Internal server error"}), 500
+
+
+@app.route("/analytics", methods=["GET"])
+def get_analytics():
+    """Get system analytics"""
+    try:
+        analytics = data_manager.get_system_analytics()
+        return jsonify(analytics), 200
+    except Exception as e:
+        logger.error(f"Error getting analytics: {str(e)}")
+        return jsonify({"error": "Internal server error"}), 500
+
+
+@app.route("/analytics/user/<username>", methods=["GET"])
+def get_user_analytics(username):
+    """Get analytics for a specific user"""
+    try:
+        user_analytics = data_manager.get_user_analytics(username)
+        if user_analytics:
+            return jsonify(user_analytics), 200
+        else:
+            return jsonify({"error": "User not found"}), 404
+    except Exception as e:
+        logger.error(f"Error getting user analytics for {username}: {str(e)}")
+        return jsonify({"error": "Internal server error"}), 500
+
+
+@app.route("/export/user/<username>", methods=["GET"])
+def export_user_data(username):
+    """Export all data for a specific user (GDPR compliance)"""
+    try:
+        export_data = data_manager.export_user_data(username)
+        if "error" not in export_data:
+            return jsonify(export_data), 200
+        else:
+            return jsonify(export_data), 404
+    except Exception as e:
+        logger.error(f"Error exporting data for user {username}: {str(e)}")
+        return jsonify({"error": "Internal server error"}), 500
+
+
+@app.route("/data/validate", methods=["GET"])
+def validate_data():
+    """Validate consistency between SQLite and JSON data"""
+    try:
+        validation_report = data_manager.validate_data_consistency()
+        return jsonify(validation_report), 200
+    except Exception as e:
+        logger.error(f"Error validating data consistency: {str(e)}")
+        return jsonify({"error": "Internal server error"}), 500
+
+
+@app.route("/data/backup", methods=["POST"])
+def backup_data():
+    """Trigger manual backup from SQLite to JSON"""
+    try:
+        backup_result = data_manager.backup_to_json()
+        return jsonify(backup_result), 200
+    except Exception as e:
+        logger.error(f"Error during backup: {str(e)}")
         return jsonify({"error": "Internal server error"}), 500
 
 
