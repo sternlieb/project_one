@@ -1,7 +1,7 @@
 // DOM Elements
 const usernameInput = document.getElementById('usernameInput');
 const questionInput = document.getElementById('questionInput');
-const answerOutput = document.getElementById('answerOutput');
+const chatMessages = document.getElementById('chatMessages');
 const sendBtn = document.getElementById('sendBtn');
 const resetBtn = document.getElementById('resetBtn');
 const status = document.getElementById('status');
@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
     sendBtn.addEventListener('click', sendQuestion);
     resetBtn.addEventListener('click', resetForm);
 
-    // Allow Enter key to send question (Ctrl+Enter for new line)
+    // Allow Enter key to send question
     questionInput.addEventListener('keydown', function(e) {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
@@ -34,6 +34,28 @@ document.addEventListener('DOMContentLoaded', function() {
         clearStatus();
     });
 });
+
+// Add message to chat
+function addMessage(message, isUser = false, username = '') {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = isUser ? 'user-message' : 'bot-message';
+
+    const avatarDiv = document.createElement('div');
+    avatarDiv.className = 'message-avatar';
+    avatarDiv.textContent = isUser ? (username.charAt(0).toUpperCase() || '👤') : '🤖';
+
+    const bubbleDiv = document.createElement('div');
+    bubbleDiv.className = `message-bubble ${isUser ? 'user-bubble' : 'bot-bubble'}`;
+    bubbleDiv.textContent = message;
+
+    messageDiv.appendChild(avatarDiv);
+    messageDiv.appendChild(bubbleDiv);
+
+    chatMessages.appendChild(messageDiv);
+
+    // Scroll to bottom
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
 
 // Send question to server
 async function sendQuestion() {
@@ -53,9 +75,13 @@ async function sendQuestion() {
         return;
     }
 
-    // Disable button and show loading
+    // Add user message to chat
+    addMessage(question, true, username);
+
+    // Clear input and disable form
+    questionInput.value = '';
     setLoadingState(true);
-    showStatus('Sending question to server<span class="loading-dots"></span>', 'loading');
+    showStatus('Getting response<span class="loading-dots"></span>', 'loading');
 
     try {
         // Send request to server
@@ -76,38 +102,41 @@ async function sendQuestion() {
 
         const data = await response.json();
 
-        // Display the answer
-        answerOutput.value = data.answer;
-        showStatus('Answer received successfully!', 'success');
-
-        // Clear success message after 3 seconds
-        setTimeout(() => {
-            clearStatus();
-        }, 3000);
+        // Add bot response to chat
+        addMessage(data.answer, false);
+        clearStatus();
 
     } catch (error) {
         console.error('Error sending question:', error);
 
-        // Handle different error types
+        // Add error message to chat
+        let errorMessage;
         if (error.name === 'TypeError') {
-            showStatus('Unable to connect to server. Please make sure the server is running on port 5000.', 'error');
+            errorMessage = 'Unable to connect to server. Please make sure the server is running on port 5000.';
         } else {
-            showStatus(`Error: ${error.message}`, 'error');
+            errorMessage = `Error: ${error.message}`;
         }
 
-        answerOutput.value = '';
+        addMessage(errorMessage, false);
+        showStatus('Connection error occurred.', 'error');
     } finally {
         setLoadingState(false);
+        questionInput.focus();
     }
 }
 
-// Reset form
+// Reset form (Clear chat)
 function resetForm() {
-    usernameInput.value = '';
+    // Clear chat messages except welcome message
+    const welcomeMessage = chatMessages.querySelector('.welcome-message');
+    chatMessages.innerHTML = '';
+    if (welcomeMessage) {
+        chatMessages.appendChild(welcomeMessage);
+    }
+
     questionInput.value = '';
-    answerOutput.value = '';
     clearStatus();
-    usernameInput.focus();
+    questionInput.focus();
 }
 
 // Show status message
@@ -126,13 +155,12 @@ function clearStatus() {
 function setLoadingState(loading) {
     sendBtn.disabled = loading;
     resetBtn.disabled = loading;
-    usernameInput.disabled = loading;
     questionInput.disabled = loading;
 
     if (loading) {
-        sendBtn.innerHTML = 'Sending...';
+        sendBtn.innerHTML = '<span>Sending...</span>';
     } else {
-        sendBtn.innerHTML = 'Send Question';
+        sendBtn.innerHTML = '<span>Send</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>';
     }
 }
 

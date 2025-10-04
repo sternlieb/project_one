@@ -4,39 +4,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Question & Answer App</title>
+    <title>ShouldAI</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
     <div class="container">
         <div class="header">
-            <h1>Question & Answer App</h1>
-            <p>Ask a question and get an answer from the server</p>
+            <h1>ShouldAI</h1>
+            <p> Learn to be seen beyond the screen.</p>
+            <p> Exclusive and meaningful conversations designed to help you grow. </p>
+
         </div>
 
         <div class="app-container">
-            <div class="input-section">
+            <div class="username-section">
                 <label for="usernameInput">Enter your username:</label>
-                <input
-                    type="text"
-                    id="usernameInput"
-                    placeholder="Your name or username..."
-                    class="username-input"
-                />
-
-                <label for="questionInput">Enter your question:</label>
-                <textarea id="questionInput" placeholder="Type your question here..." rows="4"></textarea>
-
-                <div class="button-group">
-                    <button id="sendBtn" class="btn btn-primary">Send Question</button>
-                    <button id="resetBtn" class="btn btn-secondary">Reset</button>
-                </div>
+                <input type="text" id="usernameInput" placeholder="Your name or username..." class="username-input" />
             </div>
 
-            <div class="output-section">
-                <label for="answerOutput">Server Response:</label>
-                <textarea id="answerOutput" placeholder="Answer will appear here..." rows="4" readonly></textarea>
+            <div class="chat-container">
+                <div class="chat-messages" id="chatMessages">
+                    <div class="welcome-message">
+                        <div class="bot-message">
+                            <div class="message-avatar">🤖</div>
+                            <div class="message-bubble bot-bubble">
+                                Welcome to ShouldAI! I'm here to help you learn awareness and create the impact you
+                                want. What would you like to know?
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chat-input-container">
+                    <div class="chat-input-wrapper">
+                        <input type="text" id="questionInput" placeholder="Type your message here..."
+                            class="chat-input" />
+                        <button id="sendBtn" class="btn btn-primary chat-send-btn">
+                            <span>Send</span>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="m22 2-7 20-4-9-9-4Z" />
+                                <path d="M22 2 11 13" />
+                            </svg>
+                        </button>
+                    </div>
+                    <button id="resetBtn" class="btn btn-secondary reset-btn">Clear Chat</button>
+                </div>
             </div>
 
             <div class="status" id="status"></div>

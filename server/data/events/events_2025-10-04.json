@@ -1,7 +1,7 @@
 {
   "date": "2025-10-04",
   "schema_version": "1.0",
-  "total_events": 3,
+  "total_events": 6,
   "events": [
     {
       "id": 6001,
@@ -35,6 +35,39 @@
       "ip_address": "127.0.0.1",
       "session_id": "sess_607a09d86ecb",
       "created_at": "2025-10-04T13:40:59.216004+00:00"
+    },
+    {
+      "id": 6004,
+      "user_id": 21,
+      "username": "Menachem",
+      "question": "Third question",
+      "answer": "The universe whispers: 'Maybe, maybe not.'",
+      "timestamp": "2025-10-04T17:51:51.198782+00:00",
+      "ip_address": "127.0.0.1",
+      "session_id": "sess_2127d729dfcd",
+      "created_at": "2025-10-04T17:51:51.198782+00:00"
+    },
+    {
+      "id": 6005,
+      "user_id": 23,
+      "username": "Mary",
+      "question": "What is the problem?",
+      "answer": "That's a great question! I wish I had a great answer.",
+      "timestamp": "2025-10-04T18:21:52.729847+00:00",
+      "ip_address": "127.0.0.1",
+      "session_id": "sess_c1b6637ea488",
+      "created_at": "2025-10-04T18:21:52.729847+00:00"
+    },
+    {
+      "id": 6006,
+      "user_id": 21,
+      "username": "Menachem",
+      "question": "This is my question",
+      "answer": "The answer lies in the stars, but they're not telling today.",
+      "timestamp": "2025-10-04T18:50:52.086433+00:00",
+      "ip_address": "127.0.0.1",
+      "session_id": "sess_58afb7645b92",
+      "created_at": "2025-10-04T18:50:52.086433+00:00"
     }
   ]
 }
