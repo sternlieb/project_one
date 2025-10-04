@@ -4,10 +4,11 @@ A simple full-stack web application where users can ask questions and receive re
 
 ## 🚀 Features
 
-- **Client Side**: Clean, responsive web interface
-- **Server Side**: Python Flask API
+- **Client Side**: Clean, responsive web interface with username input
+- **Server Side**: Python Flask API with random response system
+- **Dynamic Responses**: Random answers from JSON file (10 different responses)
 - **Real-time Communication**: Client-server communication via HTTP requests
-- **Interactive UI**: Question input, answer display, and reset functionality
+- **Interactive UI**: Username input, question input, answer display, and reset functionality
 - **Error Handling**: Comprehensive error handling and user feedback
 
 ## 📁 Project Structure
@@ -22,6 +23,8 @@ project_one/
 │       └── script.js      # Client-side JavaScript
 ├── server/                # Backend files
 │   ├── main.py           # Flask server
+│   ├── response_handler.py # Random response system
+│   ├── responses.json    # JSON file with 10 random responses
 │   └── requirements.txt  # Python dependencies
 ├── .gitignore            # Git ignore file
 └── README.md             # This file
@@ -117,9 +120,11 @@ pip install Flask Flask-CORS
 
 You can easily customize the application:
 
-- **Change the answer**: Edit the `answer = "answer"` line in `server/main.py`
+- **Change responses**: Edit `server/responses.json` to add/modify the 10 random responses
+- **Add more responses**: Add more lines to the "responses" array in `responses.json`
 - **Modify styling**: Edit `client/css/style.css`
 - **Add features**: Extend `client/js/script.js` and `server/main.py`
+- **Test responses**: Run `python response_handler.py` to test the response system
 
 ## 📝 Development
 

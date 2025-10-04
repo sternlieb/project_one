@@ -3,6 +3,7 @@ from datetime import datetime
 
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+from response_handler import get_random_answer
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -72,8 +73,8 @@ def handle_question():
         logger.info(f"Received question from user '{username}': {question}")
 
         # Process the question and generate response
-        # For now, simply return "answer" as requested
-        answer = "answer"
+        # Get a random response from the JSON file
+        answer = get_random_answer()
 
         # Log the response
         logger.info(f"Sending answer to user '{username}': {answer}")
@@ -113,6 +114,7 @@ if __name__ == "__main__":
     print("🚀 Question & Answer Server Starting...")
     print("📡 Server will run on: http://localhost:5000")
     print("🔄 CORS enabled for client communication")
+    print("🎯 Random responses loaded from JSON file")
     print("=" * 50)
 
     # Run the Flask app
