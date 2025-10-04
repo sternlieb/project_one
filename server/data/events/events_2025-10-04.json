@@ -1,0 +1,18 @@
+{
+  "date": "2025-10-04",
+  "schema_version": "1.0",
+  "total_events": 1,
+  "events": [
+    {
+      "id": 6001,
+      "user_id": 21,
+      "username": "Menachem",
+      "question": "What is your answer?",
+      "answer": "The magic 8-ball says: Reply hazy, try again.",
+      "timestamp": "2025-10-04T12:46:57.283846+00:00",
+      "ip_address": "127.0.0.1",
+      "session_id": "sess_3d6044707ddc",
+      "created_at": "2025-10-04T12:46:57.283846+00:00"
+    }
+  ]
+}

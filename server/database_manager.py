@@ -4,13 +4,14 @@ Database Manager Module
 Handles all SQLite database operations for the Q&A application.
 """
 
-import sqlite3
-import asyncio
-import aiosqlite
-import os
-from datetime import datetime, timezone
-from typing import Optional, List, Dict, Any
 import logging
+
+# import asyncio  # Unused for now
+# import aiosqlite  # Unused for now
+import os
+import sqlite3
+from datetime import datetime, timezone
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +43,8 @@ class DatabaseManager:
                 cursor = conn.cursor()
 
                 # Create users table
-                cursor.execute("""
+                cursor.execute(
+                    """
                     CREATE TABLE IF NOT EXISTS users (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
                         username TEXT UNIQUE NOT NULL,
@@ -52,10 +54,12 @@ class DatabaseManager:
                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                     )
-                """)
+                """
+                )
 
                 # Create events table
-                cursor.execute("""
+                cursor.execute(
+                    """
                     CREATE TABLE IF NOT EXISTS events (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
                         user_id INTEGER,
@@ -68,14 +72,25 @@ class DatabaseManager:
                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                         FOREIGN KEY (user_id) REFERENCES users (id)
                     )
-                """)
+                """
+                )
 
                 # Create indexes for performance
-                cursor.execute("CREATE INDEX IF NOT EXISTS idx_users_username ON users (username)")
-                cursor.execute("CREATE INDEX IF NOT EXISTS idx_events_username ON events (username)")
-                cursor.execute("CREATE INDEX IF NOT EXISTS idx_events_timestamp ON events (timestamp)")
-                cursor.execute("CREATE INDEX IF NOT EXISTS idx_events_date ON events (DATE(timestamp))")
-                cursor.execute("CREATE INDEX IF NOT EXISTS idx_events_user_id ON events (user_id)")
+                cursor.execute(
+                    "CREATE INDEX IF NOT EXISTS idx_users_username ON users (username)"
+                )
+                cursor.execute(
+                    "CREATE INDEX IF NOT EXISTS idx_events_username ON events (username)"
+                )
+                cursor.execute(
+                    "CREATE INDEX IF NOT EXISTS idx_events_timestamp ON events (timestamp)"
+                )
+                cursor.execute(
+                    "CREATE INDEX IF NOT EXISTS idx_events_date ON events (DATE(timestamp))"
+                )
+                cursor.execute(
+                    "CREATE INDEX IF NOT EXISTS idx_events_user_id ON events (user_id)"
+                )
 
                 conn.commit()
                 logger.info("✅ Database initialized successfully")
@@ -84,7 +99,9 @@ class DatabaseManager:
             logger.error(f"❌ Error initializing database: {e}")
             raise
 
-    def get_or_create_user(self, username: str, ip_address: str = None) -> Dict[str, Any]:
+    def get_or_create_user(
+        self, username: str, ip_address: Optional[str] = None
+    ) -> Optional[Dict[str, Any]]:
         """
         Get existing user or create new one.
 
@@ -108,21 +125,29 @@ class DatabaseManager:
 
                 if user:
                     # Update last_seen
-                    cursor.execute("""
+                    cursor.execute(
+                        """
                         UPDATE users
                         SET last_seen = ?, updated_at = ?
                         WHERE username = ?
-                    """, (now, now, username))
+                    """,
+                        (now, now, username),
+                    )
 
                     # Get updated user
-                    cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
+                    cursor.execute(
+                        "SELECT * FROM users WHERE username = ?", (username,)
+                    )
                     user = cursor.fetchone()
                 else:
                     # Create new user
-                    cursor.execute("""
+                    cursor.execute(
+                        """
                         INSERT INTO users (username, first_seen, last_seen, total_questions, created_at, updated_at)
                         VALUES (?, ?, ?, 0, ?, ?)
-                    """, (username, now, now, now, now))
+                    """,
+                        (username, now, now, now, now),
+                    )
 
                     user_id = cursor.lastrowid
                     cursor.execute("SELECT * FROM users WHERE id = ?", (user_id,))
@@ -137,9 +162,15 @@ class DatabaseManager:
             logger.error(f"❌ Error managing user {username}: {e}")
             raise
 
-    def log_event(self, username: str, question: str, answer: str,
-                  ip_address: str = None, session_id: str = None,
-                  timestamp: str = None) -> int:
+    def log_event(
+        self,
+        username: str,
+        question: str,
+        answer: str,
+        ip_address: Optional[str] = None,
+        session_id: Optional[str] = None,
+        timestamp: Optional[str] = None,
+    ) -> int:
         """
         Log a Q&A event to the database.
 
@@ -160,27 +191,41 @@ class DatabaseManager:
 
                 # Get user info
                 user = self.get_or_create_user(username, ip_address)
-                user_id = user['id'] if user else None
+                user_id = user["id"] if user else None
 
                 # Use provided timestamp or current time
                 if not timestamp:
                     timestamp = datetime.now(timezone.utc).isoformat()
 
                 # Insert event
-                cursor.execute("""
+                cursor.execute(
+                    """
                     INSERT INTO events (user_id, username, question, answer, timestamp, ip_address, session_id)
                     VALUES (?, ?, ?, ?, ?, ?, ?)
-                """, (user_id, username, question, answer, timestamp, ip_address, session_id))
+                """,
+                    (
+                        user_id,
+                        username,
+                        question,
+                        answer,
+                        timestamp,
+                        ip_address,
+                        session_id,
+                    ),
+                )
 
                 event_id = cursor.lastrowid
 
                 # Update user's total questions count
-                cursor.execute("""
+                cursor.execute(
+                    """
                     UPDATE users
                     SET total_questions = total_questions + 1,
                         updated_at = ?
                     WHERE id = ?
-                """, (datetime.now(timezone.utc).isoformat(), user_id))
+                """,
+                    (datetime.now(timezone.utc).isoformat(), user_id),
+                )
 
                 conn.commit()
                 logger.info(f"📝 Event logged: {username} -> Event ID {event_id}")
@@ -224,12 +269,15 @@ class DatabaseManager:
                 conn.row_factory = sqlite3.Row
                 cursor = conn.cursor()
 
-                cursor.execute("""
+                cursor.execute(
+                    """
                     SELECT * FROM events
                     WHERE DATE(timestamp) = ?
                     ORDER BY timestamp ASC
                     LIMIT ?
-                """, (date, limit))
+                """,
+                    (date, limit),
+                )
 
                 events = cursor.fetchall()
                 return [dict(event) for event in events]
@@ -262,36 +310,40 @@ class DatabaseManager:
 
                 # Total users
                 cursor.execute("SELECT COUNT(*) as total_users FROM users")
-                total_users = cursor.fetchone()['total_users']
+                total_users = cursor.fetchone()["total_users"]
 
                 # Total events
                 cursor.execute("SELECT COUNT(*) as total_events FROM events")
-                total_events = cursor.fetchone()['total_events']
+                total_events = cursor.fetchone()["total_events"]
 
                 # Events per day (last 7 days)
-                cursor.execute("""
+                cursor.execute(
+                    """
                     SELECT DATE(timestamp) as date, COUNT(*) as count
                     FROM events
                     WHERE timestamp >= datetime('now', '-7 days')
                     GROUP BY DATE(timestamp)
                     ORDER BY date DESC
-                """)
+                """
+                )
                 daily_events = [dict(row) for row in cursor.fetchall()]
 
                 # Top users
-                cursor.execute("""
+                cursor.execute(
+                    """
                     SELECT username, total_questions
                     FROM users
                     ORDER BY total_questions DESC
                     LIMIT 10
-                """)
+                """
+                )
                 top_users = [dict(row) for row in cursor.fetchall()]
 
                 return {
-                    'total_users': total_users,
-                    'total_events': total_events,
-                    'daily_events': daily_events,
-                    'top_users': top_users
+                    "total_users": total_users,
+                    "total_events": total_events,
+                    "daily_events": daily_events,
+                    "top_users": top_users,
                 }
 
         except Exception as e:
@@ -318,7 +370,9 @@ if __name__ == "__main__":
     print(f"Created user: {user}")
 
     # Test event logging
-    event_id = db.log_event("test_user", "What is 2+2?", "Four!", "127.0.0.1", "sess_123")
+    event_id = db.log_event(
+        "test_user", "What is 2+2?", "Four!", "127.0.0.1", "sess_123"
+    )
     print(f"Logged event ID: {event_id}")
 
     # Test analytics
