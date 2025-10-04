@@ -84,6 +84,32 @@ textarea[readonly] {
     cursor: default;
 }
 
+/* Username Input Styles */
+.username-input {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #e1e8ed;
+    border-radius: 10px;
+    font-size: 16px;
+    font-family: inherit;
+    transition: all 0.3s ease;
+    background: #fafbfc;
+    margin-bottom: 20px;
+}
+
+.username-input:focus {
+    outline: none;
+    border-color: #4facfe;
+    box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+    background: white;
+}
+
+.username-input:disabled {
+    background-color: #f8f9fa;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
 /* Button Styles */
 .button-group {
     margin-top: 20px;

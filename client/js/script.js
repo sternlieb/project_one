@@ -1,4 +1,5 @@
 // DOM Elements
+const usernameInput = document.getElementById('usernameInput');
 const questionInput = document.getElementById('questionInput');
 const answerOutput = document.getElementById('answerOutput');
 const sendBtn = document.getElementById('sendBtn');
@@ -28,13 +29,24 @@ document.addEventListener('DOMContentLoaded', function() {
     questionInput.addEventListener('input', function() {
         clearStatus();
     });
+    
+    usernameInput.addEventListener('input', function() {
+        clearStatus();
+    });
 });
 
 // Send question to server
 async function sendQuestion() {
+    const username = usernameInput.value.trim();
     const question = questionInput.value.trim();
 
-    // Validate input
+    // Validate inputs
+    if (!username) {
+        showStatus('Please enter a username before sending.', 'error');
+        usernameInput.focus();
+        return;
+    }
+    
     if (!question) {
         showStatus('Please enter a question before sending.', 'error');
         questionInput.focus();
@@ -53,6 +65,7 @@ async function sendQuestion() {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
+                username: username,
                 question: question
             })
         });
@@ -90,10 +103,11 @@ async function sendQuestion() {
 
 // Reset form
 function resetForm() {
+    usernameInput.value = '';
     questionInput.value = '';
     answerOutput.value = '';
     clearStatus();
-    questionInput.focus();
+    usernameInput.focus();
 }
 
 // Show status message
@@ -112,6 +126,7 @@ function clearStatus() {
 function setLoadingState(loading) {
     sendBtn.disabled = loading;
     resetBtn.disabled = loading;
+    usernameInput.disabled = loading;
     questionInput.disabled = loading;
 
     if (loading) {

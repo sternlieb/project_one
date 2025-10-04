@@ -48,30 +48,43 @@ def handle_question():
         # Get JSON data from request
         data = request.get_json()
 
-        if not data or "question" not in data:
+        # Validate that we have the required data
+        if not data:
+            return jsonify({"error": "No data provided"}), 400
+        
+        if "username" not in data:
+            return jsonify({"error": "No username provided"}), 400
+            
+        if "question" not in data:
             return jsonify({"error": "No question provided"}), 400
 
+        # Extract and validate username and question
+        username = data["username"].strip()
         question = data["question"].strip()
 
+        if not username:
+            return jsonify({"error": "Username cannot be empty"}), 400
+            
         if not question:
             return jsonify({"error": "Question cannot be empty"}), 400
 
-        # Log the received question
-        logger.info(f"Received question: {question}")
+        # Log the received username and question
+        logger.info(f"Received question from user '{username}': {question}")
 
         # Process the question and generate response
         # For now, simply return "answer" as requested
         answer = "answer"
 
         # Log the response
-        logger.info(f"Sending answer: {answer}")
+        logger.info(f"Sending answer to user '{username}': {answer}")
 
-        # Return the answer
+        # Return the answer with username included
         return (
             jsonify(
                 {
                     "answer": answer,
                     "question": question,
+                    "username": username,
                     "timestamp": datetime.now().isoformat(),
                 }
             ),

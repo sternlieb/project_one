@@ -82,9 +82,10 @@ xdg-open index.html  # On Linux
 
 1. **Start the Server**: Make sure the Python server is running on port 5000
 2. **Open the Client**: Load the HTML file in your browser
-3. **Ask a Question**: Type any question in the text area
-4. **Get an Answer**: Click "Send Question" - the server will respond with "answer"
-5. **Reset**: Click "Reset" to clear both text areas and ask a new question
+3. **Enter Username**: Type your name or username in the first field
+4. **Ask a Question**: Type any question in the text area
+5. **Get an Answer**: Click "Send Question" - the server will respond with "answer"
+6. **Reset**: Click "Reset" to clear all fields and ask a new question
 
 ## 🔧 API Endpoints
 
