@@ -51,10 +51,10 @@ def handle_question():
         # Validate that we have the required data
         if not data:
             return jsonify({"error": "No data provided"}), 400
-        
+
         if "username" not in data:
             return jsonify({"error": "No username provided"}), 400
-            
+
         if "question" not in data:
             return jsonify({"error": "No question provided"}), 400
 
@@ -64,7 +64,7 @@ def handle_question():
 
         if not username:
             return jsonify({"error": "Username cannot be empty"}), 400
-            
+
         if not question:
             return jsonify({"error": "Question cannot be empty"}), 400
 

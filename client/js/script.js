@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', function() {
     questionInput.addEventListener('input', function() {
         clearStatus();
     });
-    
+
     usernameInput.addEventListener('input', function() {
         clearStatus();
     });
@@ -46,7 +46,7 @@ async function sendQuestion() {
         usernameInput.focus();
         return;
     }
-    
+
     if (!question) {
         showStatus('Please enter a question before sending.', 'error');
         questionInput.focus();
